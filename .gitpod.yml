@@ -1,0 +1,21 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - name: notebook
+    init: |
+      pip install -e . 
+    command: |
+      jupyter notebook --allow-root --no-browser --ip=0.0.0.0 --port=8080 --NotebookApp.token='' --NotebookApp.password=''"
+  - name: watcher
+    command: |
+      watchmedo shell-command --command nbdev_build_docs --pattern *.ipynb --recursive --drop
+  - name: jekyll
+    openMode: split-right
+    init: |
+      bash -c "cp -r docs_src docs
+      pip install .
+      nbdev_build_docs && cd docs
+      bundle i
+      chmod -R u+rwx . 
+    command: bundle exec jekyll serve --host 0.0.0.0"
